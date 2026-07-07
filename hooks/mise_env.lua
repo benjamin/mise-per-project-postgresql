@@ -32,7 +32,7 @@ function PLUGIN:MiseEnv(ctx)
         return env_vars
     end
 
-    local data_dir = ".postgres"
+    local data_dir = _options.data_dir or ".postgres"
     local full_data_dir = full_path(data_dir)
 
     if not full_data_dir then
