@@ -5,7 +5,7 @@ PLUGIN = {
     name = "per-project-postgresql",
 
     --- Plugin version (required)
-    version = "0.0.2",
+    version = "0.0.3",
 
     --- Plugin description (optional)
     description = "Mise Env plugin for per-project PostgreSQL instances",

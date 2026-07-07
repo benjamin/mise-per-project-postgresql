@@ -1,4 +1,5 @@
 -- Helper function to get the full path of a directory
+-- TODO: Make this work on Windows too, but for now, just use realpath on Unix-like systems
 function full_path(path)
     local cmd = require("cmd")
     local strings = require("strings")
@@ -35,7 +36,7 @@ function PLUGIN:MiseEnv(ctx)
     local data_dir = _options.data_dir or ".postgres"
     local full_data_dir = full_path(data_dir)
 
-    if not full_data_dir then
+    if not full_data_dir or not file.exists(full_data_dir) then
         local success, output = pcall(cmd.exec, "initdb -D " .. data_dir)
 
         if success then
