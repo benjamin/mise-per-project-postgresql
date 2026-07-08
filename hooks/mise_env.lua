@@ -35,6 +35,7 @@ function PLUGIN:MiseEnv(ctx)
 
     local data_dir = _options.data_dir or ".postgres"
     local full_data_dir = full_path(data_dir)
+    local host = _options.socket_dir or full_data_dir
 
     if not full_data_dir or not file.exists(full_data_dir) then
         local success, output = pcall(cmd.exec, "initdb -D " .. data_dir)
@@ -43,16 +44,16 @@ function PLUGIN:MiseEnv(ctx)
             full_data_dir = full_path(data_dir)
             cmd.exec(
                 "printf \"listen_addresses = ''\\nunix_socket_directories = '"
-                    .. full_data_dir
+                    .. host
                     .. "'\\n\" >> "
                     .. full_data_dir
                     .. "/postgresql.conf"
             )
             cmd.exec('echo "CREATE DATABASE $USER;" | postgres --single -E postgres', {
-                env = { PGDATA = full_data_dir, PGHOST = full_data_dir },
+                env = { PGDATA = full_data_dir, PGHOST = host },
             })
         else
-            error("Couldn't run initdb: " .. output)
+            error("Couldn't run initdb: " .. tostring(output))
         end
     end
 
@@ -62,11 +63,11 @@ function PLUGIN:MiseEnv(ctx)
     })
     table.insert(env_vars, {
         key = "PGHOST",
-        value = full_data_dir,
+        value = host,
     })
     table.insert(env_vars, {
         key = "DATABASE_URL",
-        value = "postgresql:///?host=" .. full_data_dir,
+        value = "postgresql:///?host=" .. host,
     })
 
     return env_vars
